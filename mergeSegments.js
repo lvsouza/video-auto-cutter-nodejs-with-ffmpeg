@@ -10,15 +10,15 @@ import { execSync } from 'child_process';
  */
 export const mergeSegments = (segments, outputPath, listFilePath) => {
   const listContent = segments
-    .map(seg => `file '${seg.path}'`)
+    .map(seg => `file '${seg.path.replace(/'/g, "'\\''")}'`)
     .join('\n');
 
-  fs.writeFileSync(listFilePath, listContent);
+  fs.writeFileSync(listFilePath, listContent, 'utf-8');
 
   // Executa o ffmpeg para concatenar sem re-encodar
   execSync(
-    `ffmpeg -y -f concat -safe 0 -i ${listFilePath} -c copy ${outputPath}`,
-    { stdio: 'inherit' }
+    `ffmpeg -y -f concat -safe 0 -i '${listFilePath}' -c copy '${outputPath}'`,
+    { stdio: 'ignore' }
   );
 
   // Remove o arquivo de lista temporário

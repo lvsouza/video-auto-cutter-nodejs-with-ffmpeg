@@ -17,7 +17,7 @@ import { join } from "path";
  * @param {string} videoPath - Caminho do vídeo original.
  * @param {string} outputDir - Caminho da pasta onde salvar os segmentos.
  * @param {import('./getSegments').Segment[]} segments - Lista de segmentos com tempo inicial e final.
- * @returns {Promise<SegmentResult[]>}
+ * @returns {Promise<[SegmentResult[], (() => Promise<void>)]>}
  */
 export async function cutSegments(videoPath, outputDir, segments) {
   const fileType = videoPath.split('.').at(-1)
@@ -36,7 +36,10 @@ export async function cutSegments(videoPath, outputDir, segments) {
           "-i", videoPath,
           "-t", duration.toString(),
           "-c:v", "libx264",
+          "-crf", "18",     // controle de qualidade (quanto menor, melhor; 18 é excelente)
+          "-preset", "slow", // mais tempo, melhor compressão
           "-c:a", "aac",
+          "-b:a", "192k",
           outputFile,
         ]);
 
@@ -51,5 +54,9 @@ export async function cutSegments(videoPath, outputDir, segments) {
     })
   );
 
-  return results;
+  const clearTemp = async () => {
+    await fs.rm(outputDir, { recursive: true });
+  }
+
+  return [results, clearTemp];
 }

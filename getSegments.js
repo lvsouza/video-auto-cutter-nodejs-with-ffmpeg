@@ -6,6 +6,7 @@ import path from "path";
  * @typedef {Object} Segment
  * @property {number} start - Tempo inicial do segmento em segundos.
  * @property {number} end - Tempo final do segmento em segundos.
+ * @property {number} duration - Duração total do segmento.
  */
 
 /**
@@ -86,5 +87,7 @@ export function getSegments(videoPath, silenceAllowed = 0, silenceThreshold = -5
     }
   }
 
-  return mergedSegments.filter(segment => (segment.end - segment.start) > 1);
+  return mergedSegments
+    .map(segment => ({ ...segment, duration: segment.end - segment.start }))
+    .filter(segment => segment.duration > 1);
 }

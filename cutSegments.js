@@ -17,16 +17,22 @@ import { join } from "path";
  * @param {string} videoPath - Caminho do vídeo original.
  * @param {string} outputDir - Caminho da pasta onde salvar os segmentos.
  * @param {import('./getSegments').Segment[]} segments - Lista de segmentos com tempo inicial e final.
+ * @param {number} batchSize - Controla a quantidade de segmentos que será criados em paralelo. Evita estouro de memória.
  * @returns {Promise<[SegmentResult[], (() => Promise<void>)]>}
  */
-export async function cutSegments(videoPath, outputDir, segments) {
+export async function cutSegments(videoPath, outputDir, segments, batchSize = 2) {
   const fileType = videoPath.split('.').at(-1)
 
   await fs.mkdir(outputDir, { recursive: true });
 
-  const results = await Promise.all(
-    segments.map((segment, index) => {
-      const outputFile = join(outputDir, `segment_${index + 1}.${fileType}`);
+  const allResults = [];
+  for (let i = 0; i < segments.length; i += batchSize) {
+    console.log('Criando segmento de', i + 1, 'até', i + batchSize + 1);
+
+    const batch = segments.slice(i, i + batchSize);
+
+    const promises = batch.map((segment, index) => {
+      const outputFile = join(outputDir, `segment_${index + i + 1}.${fileType}`);
       const duration = segment.end - segment.start;
 
       return new Promise((resolve, reject) => {
@@ -47,16 +53,20 @@ export async function cutSegments(videoPath, outputDir, segments) {
           if (code === 0) {
             resolve({ path: outputFile, start: segment.start, end: segment.end, duration: segment.end - segment.start });
           } else {
-            reject(new Error(`Erro ao cortar segmento ${index + 1}`));
+            reject(new Error(`Erro ao cortar segmento ${index + i + 1}`));
           }
         });
       });
     })
-  );
+
+    const results = await Promise.all(promises);
+
+    allResults.push(...results);
+  }
 
   const clearTemp = async () => {
     await fs.rm(outputDir, { recursive: true });
   }
 
-  return [results, clearTemp];
+  return [allResults, clearTemp];
 }

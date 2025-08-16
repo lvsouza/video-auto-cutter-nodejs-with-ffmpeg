@@ -4,7 +4,7 @@ import { join } from "path";
 
 
 /**
- * @typedef {Object} CutResult
+ * @typedef {Object} SegmentResult
  * @property {string} path - Caminho do arquivo gerado do segmento.
  * @property {number} start - Tempo inicial do segmento.
  * @property {number} end - Tempo final do segmento.
@@ -17,23 +17,26 @@ import { join } from "path";
  * @param {string} videoPath - Caminho do vídeo original.
  * @param {string} outputDir - Caminho da pasta onde salvar os segmentos.
  * @param {import('./getSegments').Segment[]} segments - Lista de segmentos com tempo inicial e final.
- * @returns {Promise<CutResult[]>}
+ * @returns {Promise<SegmentResult[]>}
  */
 export async function cutSegments(videoPath, outputDir, segments) {
+  const fileType = videoPath.split('.').at(-1)
+
   await fs.mkdir(outputDir, { recursive: true });
 
   const results = await Promise.all(
     segments.map((segment, index) => {
-      const outputFile = join(outputDir, `segment_${index + 1}.mp4`);
+      const outputFile = join(outputDir, `segment_${index + 1}.${fileType}`);
       const duration = segment.end - segment.start;
 
       return new Promise((resolve, reject) => {
         const ffmpeg = spawn("ffmpeg", [
-          "-y", // sobrescreve arquivos existentes
-          "-i", videoPath,
+          "-y",
           "-ss", segment.start.toString(),
+          "-i", videoPath,
           "-t", duration.toString(),
-          "-c", "copy", // corte rápido sem re-encode
+          "-c:v", "libx264",
+          "-c:a", "aac",
           outputFile,
         ]);
 

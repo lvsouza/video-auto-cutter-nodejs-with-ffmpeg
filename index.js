@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { currentStatus, logRunner, segmentStatus } from './logRunner.js';
 import { mergeSegments } from './mergeSegments.js';
 import { getSegments } from './getSegments.js';
@@ -11,6 +13,7 @@ if (!originalPath) {
 
 
 const { inputPathVideo, outputPathVideo, tmpPath, tmpPathFFMPEGMergeFile, inputFileName, outputFileName } = getPaths(originalPath);
+
 
 logRunner(inputFileName, outputFileName)
 

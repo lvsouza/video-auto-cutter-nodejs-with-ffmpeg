@@ -20,14 +20,14 @@ import { join } from "path";
  * @param {number} batchSize - Controla a quantidade de segmentos que será criados em paralelo. Evita estouro de memória.
  * @returns {Promise<[SegmentResult[], (() => Promise<void>)]>}
  */
-export async function cutSegments(videoPath, outputDir, segments, batchSize = 2) {
+export async function cutSegments(videoPath, outputDir, segments, batchSize = 2, segmentStatus = { message: '0/0' }) {
   const fileType = videoPath.split('.').at(-1)
 
   await fs.mkdir(outputDir, { recursive: true });
 
   const allResults = [];
   for (let i = 0; i < segments.length; i += batchSize) {
-    console.log('Criando segmento de', i + 1, 'até', i + batchSize + 1);
+    segmentStatus.message = `${i + 1}/${segments.length}`;
 
     const batch = segments.slice(i, i + batchSize);
 

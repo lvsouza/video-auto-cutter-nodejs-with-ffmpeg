@@ -55,6 +55,8 @@ function findVideosInDirectory(dirPath, fileList = []) {
 
 /**
  * Função principal que gera a UI
+ * 
+ * @returns {Promise<string[]>}
  */
 export async function selectVideos(targetPath) {
   console.log(`\n🔍 Analisando a pasta: ${targetPath} ...\n`);
@@ -76,7 +78,7 @@ export async function selectVideos(targetPath) {
         return {
           name: path.relative(targetPath, videoPath), // Mostra o caminho relativo para ficar mais limpo
           value: videoPath,
-          checked: false // Começa desmarcado (mude para true se quiser todos marcados)
+          checked: true // Começa desmarcado (mude para true se quiser todos marcados)
         };
       }),
       pageSize: 15 // Quantos itens aparecem antes de precisar rolar

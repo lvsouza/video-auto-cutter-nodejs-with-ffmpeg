@@ -4,7 +4,7 @@ const steps = ["Analisando conteúdo", "Criando segmento no disco", "Criando arq
 
 export const segmentStatus = { message: '0/0' };
 
-export const currentStatus = { step: 0 };
+export const currentStatus = { step: 0, totalOfVideos: 0, totalOfVideosReady: 0 };
 
 /**
  * Gera logs de atualização do progresso
@@ -19,6 +19,9 @@ export async function logRunner(inputFileName, outputFileName) {
     process.stdout.write("\x1b[2J");   // Limpa a tela (opcional)
 
     console.log(`Removendo espaços sem audio!\n`);
+    console.log(`Total para processar: ${currentStatus.totalOfVideos}`);
+    console.log(`Total processado: ${currentStatus.totalOfVideosReady}`);
+    console.log(`Total restante: ${currentStatus.totalOfVideos - currentStatus.totalOfVideosReady}\n`);
 
     console.log(`Arquivo de entrada "${inputFileName}"\n`);
 

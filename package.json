@@ -4,5 +4,8 @@
   "type": "module",
   "bin": {
     "autocut": "index.js"
+  },
+  "dependencies": {
+    "inquirer": "^13.1.0"
   }
 }

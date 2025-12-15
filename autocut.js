@@ -1,15 +1,20 @@
 #!/usr/bin/env node
 
-import { currentStatus, logRunner, segmentStatus } from './logRunner.js';
-import { mergeSegments } from './mergeSegments.js';
-import { getSegments } from './getSegments.js';
-import { cutSegments } from './cutSegments.js';
-import { selectVideos } from './listVideos.js';
-import { getPaths } from './getPath.js';
+import { currentStatus, logRunner, segmentStatus } from './src/logRunner.js';
+import { mergeSegments } from './src/mergeSegments.js';
+import { getSegments } from './src/getSegments.js';
+import { cutSegments } from './src/cutSegments.js';
+import { selectVideos } from './lsrc/istVideos.js';
+import { getPaths } from './src/getPath.js';
+
 
 const [originalPath] = process.argv.slice(2);
 if (!originalPath) {
   throw new Error("Path with problem");
+}
+
+if (!originalPath) {
+  throw new Error('Path is required')
 }
 
 await selectVideos(originalPath)

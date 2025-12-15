@@ -6,7 +6,8 @@
     "declare": "npm install -g ."
   },
   "bin": {
-    "autocut": "index.js"
+    "autocut": "autocut.js",
+    "autoaudio": "autoaudio.js"
   },
   "dependencies": {
     "inquirer": "^13.1.0"
